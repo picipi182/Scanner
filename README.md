@@ -12,4 +12,5 @@ I thought a colorfull nmap would do, but then it got into what it is today.
 The program checks if you have them installed, and you can choose to install them.
 
 # WARNING
+Currently version 8.4.1-beta
 This script is still in beta! Expect bugs!
