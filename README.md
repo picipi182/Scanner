@@ -10,3 +10,6 @@ I thought a colorfull nmap would do, but then it got into what it is today.
 - Curl jq package (for looking up the location of an IP address)                         MUST
 
 The program checks if you have them installed, and you can choose to install them.
+
+# WARNING
+This script is still in beta! Expect bugs!
