@@ -2,15 +2,14 @@
 I thought a colorfull nmap would do, but then it got into what it is today.
 
 # Requirements:
-- Bash (version 4.2 and higher)                                                          MUST
-- The APT command                                                                        MUST
-- Nmap (obviously)                                                                       MUST
-- The GRC command (if you want to use the -v flag)                                     OPTIONAL
-- Searchsploit (for looking at vulnerabilities)                                          MUST
-- Curl jq package (for looking up the location of an IP address)                         MUST
+<div class="text-red mb-2">- Bash (version 4.2 and higher)                                                          MUST</div>
+<div class="text-red mb-2">- The APT command                                                                        MUST</div>
+<div class="text-red mb-2">- Nmap (obviously)                                                                       MUST</div>
+<div class="text-blue mb-2">- The GRC command (if you want to use the -v flag)                                     OPTIONAL</div>
+<div class="text-red mb-2">- Searchsploit (for looking at vulnerabilities)                                          MUST</div>
+<div class="text-red mb-2">- Curl jq package (for looking up the location of an IP address)                         MUST</div>
 
 The program checks if you have them installed, and you can choose to install them.
-
 
 ![](https://user-images.githubusercontent.com/64438056/80490409-94d45d80-8961-11ea-9b8a-7ddc21f1d0fb.png)
 ![](https://user-images.githubusercontent.com/64438056/80490413-9867e480-8961-11ea-87ab-88d24698b50e.png)
