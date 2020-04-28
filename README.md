@@ -20,5 +20,5 @@ The program checks if you have them installed, and you can choose to install the
 
 # WARNING:
 
-Currently version 8.4.1-beta.
+Currently version **8.4.1-beta**.
 This script is still in beta! Expect bugs!
