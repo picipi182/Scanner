@@ -1,5 +1,5 @@
 # Scanner
-I thought a colorfull nmap would do, but then it got into what it is today.
+I thought a colorful nmap would do, but then it got into what it is today.
 
 # Requirements:
 - Bash (version 4.2 and higher)                                                          MUST
