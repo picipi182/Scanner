@@ -61,7 +61,7 @@ fi
 
 #IF USER HAS --version
 if [[ "$VAR1" = "--version" ]]; then
-echo -e "This is \e[1mScanner \e[0mversion \e[1m8.1.4-beta\e[0m"
+echo -e "This is \e[1mScanner \e[0mversion \e[1m8.1.5-beta\e[0m"
 echo -e "\e[91mWARNING: This is only beta! Expect some bugs!"
 exit
 fi
@@ -618,9 +618,16 @@ echo ""
 echo -e "\e[92m\e[1m[+] \e[0m\e[92mDone service scan\e[0m"
 
 NMAPOS=$(nmap -O $VAR1)
+if grep -w "Running:" <<< "$NMAPOS" >/dev/null || grep -w "Running (JUST GUESSING):" <<< "$NMAPOS" >/dev/null; then
+
 if grep -w "Running:" <<< "$NMAPOS" >/dev/null; then
 IPHOSTOS=$(grep -w "Running:" <<< "$NMAPOS")
 IPHOSTOSM=${IPHOSTOS:9}
+fi
+if grep -w "Running (JUST GUESSING):" <<< "$NMAPOS" >/dev/null; then
+IPHOSTOS=$(grep -w "Running (JUST GUESSING):" <<< "$NMAPOS")
+IPHOSTOSM=${IPHOSTOS:25}
+fi
 WOWZERS="1"
 if [[ "$GRCT" = "1" ]]; then
 if [[ "$VAR2" = "-v" ]]; then
@@ -761,6 +768,7 @@ OSVULNSA
 
 fi
 else
+
 echo ""
 echo -e "\e[31m\e[1m[-] \e[0m\e[31mCould not find exact match for host OS!\e[0m"
 echo ""
