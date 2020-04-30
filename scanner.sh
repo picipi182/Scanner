@@ -2,6 +2,7 @@
 
 #SETTING UP VARIABLES
 #keep trach of which scan the user ran and it came back alive.
+CYKAFAK="1"
 KEEP="1"
 V="-v"
 H="-h"
@@ -10,6 +11,7 @@ VAR2=${2:-foo}
 r=0
 DOUBLE="1"
 GRCT="1"
+_PNU=4000
 
 #CHECK IF BASH IS INSTALLED ON THE MACHNINE
 BASHINSTALLED=$(command -v bash)
@@ -61,8 +63,10 @@ fi
 
 #IF USER HAS --version
 if [[ "$VAR1" = "--version" ]]; then
-echo -e "This is \e[1mScanner \e[0mversion \e[1m8.1.5-beta\e[0m"
+echo ""
+echo -e "This is \e[1mScanner \e[0mversion \e[1m8.1.7-beta\e[0m"
 echo -e "\e[91mWARNING: This is only beta! Expect some bugs!"
+echo ""
 exit
 fi
 
@@ -148,7 +152,7 @@ fi
 if [[ "$VAR1" =~ ^[0-9.]+$ ]]; then
 echo F>/dev/null
 else
-echo -e "\e[31mThe give flag isn't an \e[1mIP address\e[0m\e[31m!\e[0m"
+echo -e "\e[31mThe give flag isn't an \e[1mIP address\e[0m\e[31m or any other valid flag!\e[0m"
 exit
 fi
 
@@ -171,7 +175,8 @@ break
 ;;
 [Nn])
 PRIVS=2
-echo -e "\e[96mSince you are not running this as sudo or root, you will have less features!"
+echo ""
+echo -e "\e[95mSince you are not running this as sudo or root, you will have less features!\e[0m"
 echo ""
 break
 ;;
@@ -375,14 +380,13 @@ fi
 if [[ "$_PNU" = "" ]]; then
 _PNU=4000
 echo ""
-echo -e "\e[92m\e[1m[+] \e[0m\e[92mPorts set from 0 to $_PNU \e[0m"
+echo -e "\e[92m\e[1m[+] \e[0m\e[92mPorts set from 1 to $_PNU \e[0m"
 DOUBLE="2"
-break
 fi
 
 if [[ "$DOUBLE" = "1" ]]; then
 echo ""
-echo -e "\e[92m\e[1m[+] \e[0m\e[92mPorts set from 0 to $_PNU \e[0m"
+echo -e "\e[92m\e[1m[+] \e[0m\e[92mPorts set from 1 to $_PNU \e[0m"
 fi
 break
 ;;
@@ -408,7 +412,16 @@ if [[ "$GRCT" = "1" ]]; then
 #IF USER HAS -V
 if [[ "$VAR2" == "$V" ]]; then
 echo ""
+
+if grep -w "0 hosts up" <<< "$SCANRESULTS" >/dev/null; then
+
+FAK123456789M=$(echo -e "$SCANRESULTS" | sed -e 's/Host seems down./\\e[31m\\e[1mHost seems down.\\e[0m/g' | sed -e 's/0 hosts up/\\e[31m\\e[1m0 hosts up\\e[0m/g' | sed -e 's/-Pn/\\e[31m\\e[1m-Pn\\e[0m/g')
+echo -e "$FAK123456789M"
+else
 grc nmap -p 1-$_PNU -sV "$VAR1"
+
+fi
+
 echo ""
 fi
 fi
@@ -428,7 +441,7 @@ case $_response in
 if [[ "$PRIVS" = "1" ]]; then
 #SCANNING WITH NMAP
 echo ""
-echo -e "\e[92m\e[1m[+] \e[0m\e[92mScanning $VAR1 with nmap again...\e[0m"
+echo -e "\e[92m\e[1m[+] \e[0m\e[92mScanning $VAR1 with nmap again... \e[31m(this may take a bit longer)\e[0m"
 SECONDRESULTS=$(nmap -p 1-$_PNU -sV -Pn "$VAR1")
 fi
 if [[ "$PRIVS" = "2" ]]; then
@@ -444,7 +457,14 @@ if [[ "$GRCT" = "1" ]]; then
 #USERS WITH -v
 if [[ "$VAR2" == "$V" ]]; then
 echo ""
-grc nmap -p 1-$_PNU -sV "$VAR1"
+
+if grep -w "0 hosts up" <<< "$SECONDRESULTS" >/dev/null; then
+FAK1234567890M=$(echo -e "$SECONDRESULTS" | sed -e 's/Host seems down./\\e[31m\\e[1mHost seems down.\\e[0m/g' | sed -e 's/0 hosts up/\\e[31m\\e[1m0 hosts up\\e[0m/g')
+echo -e "$FAK1234567890M"
+else
+grc nmap -p 1-$_PNU -sV -Pn "$VAR1"
+
+fi
 echo ""
 fi
 fi
@@ -577,7 +597,7 @@ i=0
 until [[ $i -gt $_PNU ]];
 do
 if [[ $i -gt 20 ]]; then
-if grep -w "$i/tcp" <<< "$SCANRESULTS2" > /dev/null; then
+if grep -w "$i/tcp open" <<< "$SCANRESULTS2" > /dev/null; then
 echo -e "\e[92m\e[1m[+] \e[0m\e[92mPort \e[1m$i \e[0m\e[92mopen on the target machine!"
 my_array[r]=$i
 ((r=r+1))
@@ -588,22 +608,22 @@ fi
 done
 echo -e "\e[92m\e[1m[+] \e[0m\e[92mTotal of \e[1m$op \e[0m\e[92mopen ports on the target machine!\e[0m "
 echo ""
-fi
-echo ""
 echo -e "\e[92m\e[1m[+] \e[0m\e[92mStarting service scan\e[0m"
 t=0
 u=1
+WOWOWOWOWOZAZAZAAZAZ="1"
 until [[ $u -gt $r ]]; do
 WOW=$(echo $SCANRESULTS2)
-if [[ "$u" = $r ]]; then
-JUNK=$(grep -oP "${my_array[$t]}/tcp open \K.*?(?=Service Info)" <<< $WOW)
+if [[ "$u" = "$r" ]]; then
+JUNK=$(grep -oP "${my_array[$t]}/tcp open \K.*?(?=Service Info)" <<< "$WOW")
 if [[ "$JUNK" = "" ]]; then
 echo "F" >/dev/null
 else
+WOWOWOWOWOZAZAZAAZAZ="2"
 echo -e "\e[92m\e[1m[+] \e[0m\e[92mService on port \e[1m${my_array[$t]}\e[0m \e[92mis \e[1m$JUNK\e[0m"
 fi
 else
-JUNK=$(grep -oP "${my_array[$t]}/tcp open \K.*?(?= ${my_array[$u]}/tcp)" <<< $WOW)
+JUNK=$(grep -oP "${my_array[$t]}/tcp open \K.*?(?= ${my_array[$u]}/tcp)" <<< "$WOW")
 if [[ "$JUNK" = "" ]]; then
 echo "F" >/dev/null
 else
@@ -615,8 +635,10 @@ fi
 
 done
 echo ""
+if [[ "$WOWOWOWOWOZAZAZAAZAZ" = "2" ]]; then
 echo -e "\e[92m\e[1m[+] \e[0m\e[92mDone service scan\e[0m"
-
+fi
+WOWZERS=""
 NMAPOS=$(nmap -O $VAR1)
 if grep -w "Running:" <<< "$NMAPOS" >/dev/null || grep -w "Running (JUST GUESSING):" <<< "$NMAPOS" >/dev/null; then
 
@@ -639,6 +661,7 @@ fi
 echo ""
 echo -e "\e[92m\e[1m[+]\e[0m\e[92m The host machine is most likely running: \e[1m$IPHOSTOSM\e[0m"
 echo ""
+
 
 function OSVULNS2 () {
 while true; do
@@ -737,8 +760,8 @@ done
 }
 OSVULNS
 
-else
-
+fi
+if [[ "$WOWZERS" = "2" ]]; then
 #THIS BOOBOO
 function OSVULNSA () {
 while true; do
@@ -782,7 +805,7 @@ i=0
 until [[ $i -gt $_PNU ]];
 do
 if [[ $i -gt 20 ]]; then
-if grep -w "$i/tcp" <<< "$SCANRESULTS2" > /dev/null; then
+if grep -w "$i/tcp open" <<< "$SCANRESULTS2" > /dev/null; then
 echo -e "\e[92m\e[1m[+] \e[0m\e[92mPort \e[1m$i \e[0m\e[92mopen on the target machine!"
 ((op=op+1))
 fi
@@ -793,7 +816,7 @@ echo -e "\e[92m\e[1m[+] \e[0m\e[92mTotal of \e[1m$op \e[0m\e[92mopen ports on th
 echo ""
 fi
 
-
+fi
 
 #SECOND SCAN
 #SECOND SCAN
@@ -801,7 +824,7 @@ if [[ "$KEEP" = "$KE2" ]]; then
 
 #IF 1000 PORTS ARE SOMETHING
 if grep -q "$_PNU" <<< "$SECONDRESULTS" ; then
-if grep -q "$_PNU/tcp open" <<< "$SCANRESULTS" ; then
+if grep -q "$_PNU/tcp open" <<< "$SECONDRESULTS" ; then
 echo wow >/dev/null
 else
 #TEST FOR DEFAULT PORTS CLOSED
@@ -836,6 +859,7 @@ SECONDRESULTS2=${SECONDRESULTS1::-20}
 if [[ "$PRIVS" = "1" ]]; then
 
 #SCANNING OPEN PORTS
+r=0
 op=0
 i=0
 until [[ $i -gt $_PNU ]];
@@ -843,26 +867,32 @@ do
 if [[ $i -gt 20 ]]; then
 if grep -w "$i/tcp" <<< "$SECONDRESULTS2" > /dev/null; then
 echo -e "\e[92m\e[1m[+] \e[0m\e[92mPort \e[1m$i \e[0m\e[92mopen on the target machine!"
+my_array[r]=$i
+((r=r+1))
 ((op=op+1))
 fi
 fi
 ((i=i+1))
 done
-echo -e "\e[92m\e[1m[+] \e[0m\e[92mTotal of \e[1m$op \e[0m\e[92mopen ports on the target machine!"
-
+echo -e "\e[92m\e[1m[+] \e[0m\e[92mTotal of \e[1m$op \e[0m\e[92mopen ports on the target machine!\e[0m "
+echo ""
+echo -e "\e[92m\e[1m[+] \e[0m\e[92mStarting service scan\e[0m"
 t=0
 u=1
+CYKAFAK="1"
+
 until [[ $u -gt $r ]]; do
-WOW=$(echo $SCANRESULTS2)
-if [[ "$u" = $r ]]; then
-JUNK=$(grep -oP "${my_array[$t]}/tcp open \K.*?(?=Service Info)" <<< $WOW)
+WOW=$(echo $SECONDRESULTS2)
+if [[ "$u" = "$r" ]]; then
+JUNK=$(grep -oP "${my_array[$t]}/tcp open \K.*?(?=Service Info)" <<< "$WOW")
 if [[ "$JUNK" = "" ]]; then
 echo "F" >/dev/null
 else
+CYKAFAK="2"
 echo -e "\e[92m\e[1m[+] \e[0m\e[92mService on port \e[1m${my_array[$t]}\e[0m \e[92mis \e[1m$JUNK\e[0m"
 fi
 else
-JUNK=$(grep -oP "${my_array[$t]}/tcp open \K.*?(?= ${my_array[$u]}/tcp)" <<< $WOW)
+JUNK=$(grep -oP "${my_array[$t]}/tcp open \K.*?(?= ${my_array[$u]}/tcp)" <<< "$WOW")
 if [[ "$JUNK" = "" ]]; then
 echo "F" >/dev/null
 else
@@ -871,12 +901,15 @@ fi
 fi
 ((u=u+1))
 ((t=t+1))
-
 done
 echo ""
+if [[ "$CYKAFAK" = "2" ]]; then
 echo -e "\e[92m\e[1m[+] \e[0m\e[92mDone service scan\e[0m"
+fi
+
 
 NMAPOS=$(nmap -O $VAR1)
+WOWZERS=""
 if grep -w "Running:" <<< "$NMAPOS" >/dev/null; then
 IPHOSTOS=$(grep -w "Running:" <<< "$NMAPOS")
 IPHOSTOSM=${IPHOSTOS:9}
@@ -918,7 +951,7 @@ fi
 else
 
 echo -e "\e[31mCould not find SMB OS DISCOVERY.\e[0m"
-fi  
+fi
 
 echo -e "\e[96mContinuing.....\e[0m"
 echo ""
@@ -936,7 +969,7 @@ break
 echo ""
 echo -e "\e[96mContinuing with that result.....\e[0m"
 echo ""
-break  
+break
 ;;
 *) echo -e "\e[1m\e[96m\e[107mPlease answer with \e[32m\e[1mY\e[0m\e[107m\e[96m, \e[31m\e[1mn\e[0m\e[107m\e[96m.\e[49m\e[0m "
 OSVULNS2
@@ -977,8 +1010,8 @@ OSVULNS
 fi
 
 
-else
-
+fi
+if [[ "$WOWZERS" = "2" ]]; then
 #THIS BOOBOO
 function OSVULNSA () {
 while true; do
@@ -1024,7 +1057,7 @@ fi
 fi
 ((i=i+1))
 done
-echo -e "\e[92m\e[1m[+] \e[0m\e[92mTotal of \e[1m$op \e[0m\e[92mopen ports on the target machine!"
+echo -e "\e[92m\e[1m[+] \e[0m\e[92mTotal of \e[1m$op \e[0m\e[92mopen ports on the target machine!\e[0m"
 fi
 fi
 
