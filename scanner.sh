@@ -2,6 +2,7 @@
 
 #SETTING UP VARIABLES
 #keep trach of which scan the user ran and it came back alive.
+FOUND="1"
 CYKAFAK="1"
 KEEP="1"
 V="-v"
@@ -64,8 +65,8 @@ fi
 #IF USER HAS --version
 if [[ "$VAR1" = "--version" ]]; then
 echo ""
-echo -e "This is \e[1mScanner \e[0mversion \e[1m8.1.7-beta\e[0m"
-echo -e "\e[91mWARNING: This is only beta! Expect some bugs!"
+echo -e "This is \e[1mScanner \e[0mversion \e[1m8.1.8-beta\e[0m"
+echo -e "\e[91mWARNING: This is only beta! Expect some bugs!\e[0m"
 echo ""
 exit
 fi
@@ -359,10 +360,66 @@ InstallJQ
 
 fi
 
+function ServicePortOSScan () {
+ab=0
+until [ $ab -gt $r ]; do
+SERVICE=${serviceos[$ab]}
+if [[ "$DONE1" = "1" ]]; then
+echo "F">/dev/null
+else
+if grep -w "Microsoft" <<< "$SERVICE" >/dev/null || grep -w "microsoft" <<< "$SERVICE" >/dev/null; then
+echo -e "\e[92mFound \e[1mMicrosoft\e[0m\e[92m in service! Maybe windows?\e[0m"
+FOUND="2"
+DONE1="1"
+fi
+fi
+if [[ "$DONE2" = "2" ]]; then
+echo "F">/dev/null
+else
+if grep -w "Windows" <<< "$SERVICE" >/dev/null || grep -w "windows" <<< "$SERVICE" >/dev/null; then
+echo -e "\e[92mFound \e[1mWindows\e[0m\e[92m in service!\e[0m"
+FOUND="2"
+DONE2="2"
+fi
+fi
+if [[ "$DONE3" = "3" ]]; then
+echo "F">/dev/null
+else
+if grep -w "Ubuntu" <<< "$SERVICE" >/dev/null || grep -w "ubuntu" <<< "$SERVICE" >/dev/null; then
+echo -e "\e[92mFound \e[1mUbuntu\e[0m\e[92m in service! Probably running Ubuntu.\e[0m"
+FOUND="2"
+DONE3="3"
+fi
+fi
+if [[ "$DONE4" = "4" ]]; then
+echo "F">/dev/null
+else
+if grep -w "Linux" <<< "$SERVICE" >/dev/null || grep -w "linux" <<< "$SERVICE" >/dev/null; then
+echo -e "\e[92mFound \e[1mLinux\e[0m\e[92m in service! Probably running some sort of a linux operationg system.\e[0m"
+FOUND="2"
+DONE4="4"
+fi
+fi
+if [[ "$DONE5" = "5" ]]; then
+echo "F">/dev/null
+else
+if grep -w "Apple" <<< "$SERVICE" >/dev/null || grep -w "apple" <<< "$SERVICE" >/dev/null; then
+echo -e "\e[92mFound \e[1mApple\e[0m\e[92m in service! Most likely a Apple \e[1miOS device\e[0m\e[92m.\e[0m"
+FOUND="2"
+DONE5="5"
+fi
+fi
+
+
+((ab=ab+1))
+done
+}
+
+
 #USER INPUT FOR HOW MANY PORTS TO SCAN
 function PortInput () {
 while true; do
-read -p $'\e[96mHow many ports do you want to scan? \e[1m\e[4m(leave blank for default)\e[0m \e[96mDEFAULT: 4000 (from 0 to 4000): \e[0m' _PNU
+read -p $'\e[96mHow many ports do you want to scan? \e[1m\e[4m(leave blank for default)\e[0m \e[96mDEFAULT: 4000 (from 1 to 4000): \e[0m' _PNU
 case $_PNU in
 [0])
 _PNU=4000
@@ -503,7 +560,6 @@ fi
 if grep -w "10" <<< "$VAR1M" > /dev/null; then
 echo ""
 echo -e "\e[31m\e[1m[-] \e[31mThis IP address is local, cannot perform location scan! \e[0m"
-echo ""
 REMOTE="false"
 fi
 
@@ -611,6 +667,8 @@ echo ""
 echo -e "\e[92m\e[1m[+] \e[0m\e[92mStarting service scan\e[0m"
 t=0
 u=1
+SSGR="1"
+sso=0
 WOWOWOWOWOZAZAZAAZAZ="1"
 until [[ $u -gt $r ]]; do
 WOW=$(echo $SCANRESULTS2)
@@ -620,7 +678,10 @@ if [[ "$JUNK" = "" ]]; then
 echo "F" >/dev/null
 else
 WOWOWOWOWOZAZAZAAZAZ="2"
-echo -e "\e[92m\e[1m[+] \e[0m\e[92mService on port \e[1m${my_array[$t]}\e[0m \e[92mis \e[1m$JUNK\e[0m"
+echo -e "\e[92m\e[1m[+] \e[0m\e[92mService on port \e[1m${my_array[$t]}\e[0m\e[92m is \e[1m$JUNK\e[0m"
+SSGR="2"
+serviceos[sso]=$JUNK
+((sso=sso+1))
 fi
 else
 JUNK=$(grep -oP "${my_array[$t]}/tcp open \K.*?(?= ${my_array[$u]}/tcp)" <<< "$WOW")
@@ -628,6 +689,9 @@ if [[ "$JUNK" = "" ]]; then
 echo "F" >/dev/null
 else
 echo -e "\e[92m\e[1m[+] \e[0m\e[92mService on port \e[1m${my_array[$t]}\e[0m \e[92mis \e[1m$JUNK\e[0m"
+SSGR="2"
+serviceos[sso]=$JUNK
+((sso=sso+1))
 fi
 fi
 ((u=u+1))
@@ -665,7 +729,7 @@ echo ""
 
 function OSVULNS2 () {
 while true; do
-read -p $'\e[96mDo you want to try and scan for a better OS result? \e[1m(only if smb is open)\e[0m\e[96m [\e[32m\e[1mY\e[0m\e[96m,\e[31m\e[1mn\e[0m\e[96m] \e[0m' _Response234
+read -p $'\e[96mDo you want to try and scan for a better OS result? \e[1m\e[0m\e[96m [\e[32m\e[1mY\e[0m\e[96m,\e[31m\e[1mn\e[0m\e[96m] \e[0m' _Response234
 case $_Response234 in
 [Yy])
 NMAP445=$(nmap $VAR1 -p445)
@@ -708,10 +772,15 @@ fi
 
 echo -e "\e[96mContinuing.....\e[0m"
 echo ""
+ServicePortOSScan
+echo ""
 break
 else
 
 echo -e "\e[31mPort 445 is closed or filtered! Continuing.....\e[0m"
+echo ""
+ServicePortOSScan
+echo ""
 break
 
 fi
@@ -792,9 +861,13 @@ OSVULNSA
 fi
 else
 
+#ADD SERVICE OS SCAN FUNCTION HERE
+ServicePortOSScan
+if [[ "$FOUND" = "1" ]]; then
 echo ""
 echo -e "\e[31m\e[1m[-] \e[0m\e[31mCould not find exact match for host OS!\e[0m"
 echo ""
+fi
 fi
 
 else
