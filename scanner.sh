@@ -65,7 +65,7 @@ fi
 #IF USER HAS --version
 if [[ "$VAR1" = "--version" ]]; then
 echo ""
-echo -e "This is \e[1mScanner \e[0mversion \e[1m8.1.8-beta\e[0m"
+echo -e "This is \e[1mScanner \e[0mversion \e[1m8.1.9-beta\e[0m"
 echo -e "\e[91mWARNING: This is only beta! Expect some bugs!\e[0m"
 echo ""
 exit
@@ -1028,10 +1028,15 @@ fi
 
 echo -e "\e[96mContinuing.....\e[0m"
 echo ""
+ServicePortOSScan
+echo ""
 break
 else
 
 echo -e "\e[31mPort 445 is closed or filtered! Continuing.....\e[0m"
+echo ""
+ServicePortOSScan
+echo ""
 break
 
 fi
@@ -1111,6 +1116,13 @@ esac
 done
 }
 OSVULNSA
+
+ServicePortOSScan
+if [[ "$FOUND" = "1" ]]; then
+echo ""
+echo -e "\e[31m\e[1m[-] \e[0m\e[31mCould not find exact match for host OS!\e[0m"
+echo ""
+fi
 
 fi
 
