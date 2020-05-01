@@ -65,7 +65,7 @@ fi
 #IF USER HAS --version
 if [[ "$VAR1" = "--version" ]]; then
 echo ""
-echo -e "This is \e[1mScanner \e[0mversion \e[1m8.1.9-beta\e[0m"
+echo -e "This is \e[1mScanner \e[0mversion \e[1m8.2.1-beta\e[0m"
 echo -e "\e[91mWARNING: This is only beta! Expect some bugs!\e[0m"
 echo ""
 exit
@@ -106,7 +106,10 @@ echo -e "\e[96mPlease use \e[1m-h\e[0m\e[96m without the IP address!\e[0m"
 exit
 
 else
-echo -e "\e[31mInvalid flag: \e[1m$VAR2\e[0m"
+echo ""
+echo -e "\e[32mPossible flags include:\e[0m"
+echo -e "  \e[35m\e[1m-v\e[0m                     Enables nmap output when nmap is run.\e[0m"
+echo ""
 exit
 fi
 fi
@@ -115,7 +118,7 @@ fi
 #CHECK FOR VAR1
 if [[ "$VAR1" = "" ]]; then
 echo ""
-echo -e "\e[31mPossible flags include:\e[0m"
+echo -e "\e[32mPossible flags include:\e[0m"
 echo -e "  \e[35m\e[1m-h\e[0m                     Help!\e[0m"
 echo -e "  \e[35m\e[1m--version\e[0m              Shows you the version of this program.\e[0m"
 echo -e "  \e[35m\e[1m--requirements\e[0m         Shows you all the requirements."
@@ -153,7 +156,10 @@ fi
 if [[ "$VAR1" =~ ^[0-9.]+$ ]]; then
 echo F>/dev/null
 else
+echo ""
 echo -e "\e[31mThe give flag isn't an \e[1mIP address\e[0m\e[31m or any other valid flag!\e[0m"
+echo -e "\e[31m\e[1mTry \e[32m\e[1m-h\e[0m\e[31m\e[1m for help.\e[0m"
+echo ""
 exit
 fi
 
@@ -386,7 +392,7 @@ if [[ "$DONE3" = "3" ]]; then
 echo "F">/dev/null
 else
 if grep -w "Ubuntu" <<< "$SERVICE" >/dev/null || grep -w "ubuntu" <<< "$SERVICE" >/dev/null; then
-echo -e "\e[92mFound \e[1mUbuntu\e[0m\e[92m in service! Probably running Ubuntu.\e[0m"
+echo -e "\e[92mFound \e[1mUbuntu\e[0m\e[92m in service! Probably running \e[1mUbuntu.\e[0m"
 FOUND="2"
 DONE3="3"
 fi
@@ -395,7 +401,7 @@ if [[ "$DONE4" = "4" ]]; then
 echo "F">/dev/null
 else
 if grep -w "Linux" <<< "$SERVICE" >/dev/null || grep -w "linux" <<< "$SERVICE" >/dev/null; then
-echo -e "\e[92mFound \e[1mLinux\e[0m\e[92m in service! Probably running some sort of a linux operationg system.\e[0m"
+echo -e "\e[92mFound \e[1mLinux\e[0m\e[92m in service! Probably running some sort of a linux operating system.\e[0m"
 FOUND="2"
 DONE4="4"
 fi
@@ -409,6 +415,27 @@ FOUND="2"
 DONE5="5"
 fi
 fi
+
+if [[ "$DONE6" = "6" ]]; then
+echo "F">/dev/null
+else
+if grep -w "Unix" <<< "$SERVICE" >/dev/null || grep -w "unix" <<< "$SERVICE" >/dev/null; then
+echo -e "\e[92mFound \e[1mUnix\e[0m\e[92m in service! Most likely a \e[1mLinux device\e[0m\e[92m.\e[0m"
+FOUND="2"
+DONE6="6"
+fi
+fi
+if [[ "$DONE7" = "7" ]]; then
+echo "F">/dev/null
+else
+if grep -w "Samba" <<< "$SERVICE" >/dev/null || grep -w "samba" <<< "$SERVICE" >/dev/null; then
+echo -e "\e[92mFound \e[1mSamba\e[0m\e[92m in service! Most likely a \e[1mSamba device\e[0m\e[92m.\e[0m"
+FOUND="2"
+DONE7="7"
+fi
+fi
+
+
 
 
 ((ab=ab+1))
@@ -652,8 +679,8 @@ op=0
 i=0
 until [[ $i -gt $_PNU ]];
 do
-if [[ $i -gt 20 ]]; then
-if grep -w "$i/tcp open" <<< "$SCANRESULTS2" > /dev/null; then
+if [[ $i -gt 19 ]]; then
+if grep -w "$i/tcp" <<< "$SCANRESULTS2" > /dev/null; then
 echo -e "\e[92m\e[1m[+] \e[0m\e[92mPort \e[1m$i \e[0m\e[92mopen on the target machine!"
 my_array[r]=$i
 ((r=r+1))
@@ -822,7 +849,7 @@ echo -e "\e[96mContinuing.....\e[0m"
 break
 ;;
 *) echo -e "\e[1m\e[96m\e[107mPlease answer with \e[32m\e[1mY\e[0m\e[107m\e[96m, \e[31m\e[1mn\e[0m\e[107m\e[96m.\e[49m\e[0m "
-OSVULNS
+
 ;;
 esac
 done
@@ -851,7 +878,7 @@ echo -e "\e[96mContinuing.....\e[0m"
 break
 ;;
 *) echo -e "\e[1m\e[96m\e[107mPlease answer with \e[32m\e[1mY\e[0m\e[107m\e[96m, \e[31m\e[1mn\e[0m\e[107m\e[96m.\e[49m\e[0m "
-OSVULNSA
+
 ;;
 esac
 done
@@ -878,7 +905,7 @@ i=0
 until [[ $i -gt $_PNU ]];
 do
 if [[ $i -gt 20 ]]; then
-if grep -w "$i/tcp open" <<< "$SCANRESULTS2" > /dev/null; then
+if grep -w "$i/tcp" <<< "$SCANRESULTS2" > /dev/null; then
 echo -e "\e[92m\e[1m[+] \e[0m\e[92mPort \e[1m$i \e[0m\e[92mopen on the target machine!"
 ((op=op+1))
 fi
@@ -1079,7 +1106,7 @@ echo -e "\e[96mContinuing.....\e[0m"
 break
 ;;
 *) echo -e "\e[1m\e[96m\e[107mPlease answer with \e[32m\e[1mY\e[0m\e[107m\e[96m, \e[31m\e[1mn\e[0m\e[107m\e[96m.\e[49m\e[0m "
-OSVULNS
+
 ;;
 esac
 done
@@ -1110,7 +1137,7 @@ echo -e "\e[96mContinuing.....\e[0m"
 break
 ;;
 *) echo -e "\e[1m\e[96m\e[107mPlease answer with \e[32m\e[1mY\e[0m\e[107m\e[96m, \e[31m\e[1mn\e[0m\e[107m\e[96m.\e[49m\e[0m "
-OSVULNSA
+
 ;;
 esac
 done
