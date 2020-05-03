@@ -65,8 +65,8 @@ fi
 #IF USER HAS --version
 if [[ "$VAR1" = "--version" ]]; then
 echo ""
-echo -e "This is \e[1mScanner \e[0mversion \e[1m8.2.1-beta\e[0m"
-echo -e "\e[91mWARNING: This is only beta! Expect some bugs!\e[0m"
+echo -e "This is \e[1mScanner \e[0mversion \e[1m8.2.2-beta\e[0m"
+echo -e "\e[91m\e[1mWARNING: \e[0m\e[91mThis is only beta! Expect some bugs!\e[0m"
 echo ""
 exit
 fi
@@ -583,10 +583,27 @@ echo ""
 REMOTE="false"
 fi
 
-#10.0.0.0
+#127.0.1.1
+if grep -w "127.0.1.1" <<< "$VAR1" > /dev/null; then
+echo ""
+echo -e "\e[31m\e[1m[-] \e[31mCannot perform location scan, because you are scanning yourself! \e[0m"
+echo ""
+REMOTE="false"
+fi
+
+#127.0.0.0/8
+if grep -w "127" <<< "$VAR1M" > /dev/null; then
+echo ""
+echo -e "\e[31m\e[1m[-] \e[31mThis IP address is local, cannot perform location scan! \e[0m"
+echo ""
+REMOTE="false"
+fi
+
+#10.0.0.0/8
 if grep -w "10" <<< "$VAR1M" > /dev/null; then
 echo ""
 echo -e "\e[31m\e[1m[-] \e[31mThis IP address is local, cannot perform location scan! \e[0m"
+echo ""
 REMOTE="false"
 fi
 
@@ -605,7 +622,7 @@ fi
 done
 fi
 
-#192.168.0.0 - 192.168.0.0
+#192.168.0.0/16
 if grep -w "192" <<< "$VAR1M" > /dev/null; then
 
 if grep -w "168" <<< "$VAR1M2" > /dev/null; then
@@ -624,9 +641,18 @@ echo -e "\e[92m\e[1m[+] \e[0m\e[92mPerforming IP location scan ......\e[0m"
 IPRESULTS=$(sudo curl -s https://ipvigilante.com/$VAR1 | jq '.data.city_name, .data.country_name')
 IPRESULTSM=${IPRESULTS//\"}
 IPRESULTSM2=$(echo $IPRESULTSM)
+GOTIT="1"
+if grep -w "null null" <<< "$IPRESULTSM2" >/dev/null; then
+echo ""
+echo -e "\e[31m\e[1m[-] \e[0m\e[31mGot \e[1mnull results\e[0m\e[31m when getting location, continuing.....\e[0m"
+echo ""
+GOTIT="2"
+fi
+if [[ "$GOTIT" = "1" ]]; then
 echo ""
 echo -e "\e[92mIP is located in \e[1m$IPRESULTSM2\e[0m"
 echo ""
+fi
 fi
 
 
@@ -640,7 +666,7 @@ if [[ "$KEEP" = "$KE1" ]]; then
 
 #IF 1000 PORTS ARE CLOSED, FILTERED OR OPEN, IF OPEN WE CONTINUE
 if grep -q "$_PNU" <<< "$SCANRESULTS" ; then
-if grep -q "$_PNU/tcp open" <<< "$SCANRESULTS" ; then
+if grep -q "$_PNU/tcp open" <<< "$SCANRESULTS" >/dev/null || grep -q "$_PNU/tcp  open" <<< "$SCANRESULTS" >/dev/null || grep -q "$_PNU\tcp   open" <<< "$SCANRESULTS" >/dev/null; then
 echo wow >/dev/null
 else
 #TEST FOR DEFAULT PORTS CLOSED
@@ -924,7 +950,7 @@ if [[ "$KEEP" = "$KE2" ]]; then
 
 #IF 1000 PORTS ARE SOMETHING
 if grep -q "$_PNU" <<< "$SECONDRESULTS" ; then
-if grep -q "$_PNU/tcp open" <<< "$SECONDRESULTS" ; then
+if grep -q "$_PNU/tcp open" <<< "$SECONDRESULTS" >/dev/null || grep -q "$_PNU/tcp  open" <<< "$SECONDRESULTS" >/dev/null || grep -q "$_PNU\tcp   open" <<< "$SECONDRESULTS" >/dev/null; then
 echo wow >/dev/null
 else
 #TEST FOR DEFAULT PORTS CLOSED
